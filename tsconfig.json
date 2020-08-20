@@ -1,12 +1,55 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "build",
     "allowSyntheticDefaultImports": true,
     "jsx": "react-native",
-    "lib": ["dom", "esnext"],
+    "lib": [
+      "dom",
+      "esnext"
+    ],
     "moduleResolution": "node",
     "noEmit": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "strict": true
-  }
+    "strict": true,
+    "paths": {
+      "@constants/*": [
+        "constants/*"
+      ],
+      "@hooks/*": [
+        "hooks/*"
+      ],
+      "@screens/*": [
+        "screens/*"
+      ],
+      "@components/*": [
+        "components/*"
+      ],
+      "@assets/*": [
+        "assets/*"
+      ],
+      "@models/*": [
+        "models/*"
+      ],
+      "@navigation/*": [
+        "navigation/*"
+      ],
+    },
+    "typeRoots": [
+      "node_modules/@types"
+    ]
+  },
+  "include": [
+    "assets/**/*",
+    "screens/**/*",
+    "models/**/*",
+    "components/**/*",
+    "constants/**/*",
+    "hooks/**/*",
+    "navigation/**/*",
+  ],
+  "exclude": [
+    "node_modules",
+  ]
 }
