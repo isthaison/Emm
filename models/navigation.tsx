@@ -13,23 +13,23 @@ export type BottomTabParamList = {
 
 export type TabOneParamList = {
   TabOneScreen: undefined;
-  MessageScreen:{ id: string };
+  MessageScreen: { id: string };
 };
 
 export type TabTwoParamList = {
   TabTwoScreen: undefined;
 };
 
-type MessageScreenRouteProp = RouteProp<TabOneParamList, "MessageScreen">;
+type TabTwocreenRouteProp = RouteProp<TabTwoParamList, "TabTwoScreen">;
 
-type MessageScreenNavigationProp = StackNavigationProp<
-  TabOneParamList,
-  "MessageScreen"
+type TabTwoScreenNavigationProp = StackNavigationProp<
+  TabTwoParamList,
+  "TabTwoScreen"
 >;
 
-export type MessageScreenProps = {
-  route: MessageScreenRouteProp;
-  navigation: MessageScreenNavigationProp;
+export type TabTwoScreenProps = {
+  route: TabTwocreenRouteProp;
+  navigation: TabTwoScreenNavigationProp;
 };
 
 type TabOneScreenRouteProp = RouteProp<TabOneParamList, "TabOneScreen">;

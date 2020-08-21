@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "AEvs",
-    "slug": "AEvs",
+    "name": "Emm",
+    "slug": "Emm",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,14 +15,17 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.emm"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
+    },
+    "android": {
+      "versionCode": 1,
+      "package": "com.emm"
     }
   }
 }

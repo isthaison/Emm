@@ -4,147 +4,132 @@ import {
   TextInput,
   Button,
   TouchableOpacity,
+  Image,
   Platform,
+  StatusBar,
+  SafeAreaView,
+  Modal,
+  Alert,
+  AsyncStorage,
 } from "react-native";
 import * as firebase from "firebase";
-import { IFirebaseOptions } from "expo-firebase-core";
+import * as Facebook from "expo-facebook";
+import QRCode from "react-native-qrcode-svg";
+import { BarCodeScanner, BarCodeEvent } from "expo-barcode-scanner";
 
-import {
-  FirebaseRecaptchaVerifierModal,
-  FirebaseRecaptchaVerifier,
-} from "expo-firebase-recaptcha";
-import { Text, View } from "@components/Themed";
+import { Text, View, useThemeColor, Icon } from "@components/Themed";
+import { AntDesign } from "@expo/vector-icons";
+import Colors from "@constants/Colors";
+import { Store } from "@hooks/Store";
+async function _storeData(uid: string) {
+  try {
+    await AsyncStorage.setItem("@EmmStore:s2", uid);
+    return true;
+  } catch (error) {
+    // Error saving data
+    return false;
+  }
+}
 
 export default function TabTwoScreen() {
-  const recaptchaVerifier = React.useRef<FirebaseRecaptchaVerifierModal>(null);
-  const [phoneNumber, setPhoneNumber] = React.useState<string>("");
-  const [verificationId, setVerificationId] = React.useState<string>("");
-  const [recaptchaToken, setrecaptchaToken] = React.useState<string>("");
-  const [verificationCode, setVerificationCode] = React.useState<string>("");
-  const firebaseConfig: IFirebaseOptions = (firebase.apps.length
-    ? firebase.app().options
-    : undefined) as any;
+  const { dispatchStore, me, s2 } = React.useContext(Store);
+  async function loginWithFacebook() {
+    await Facebook.initializeAsync("769595773610249");
 
-  const [message, showMessage] = React.useState<
-    | {
-        text: string;
-        color?: string;
-      }
-    | undefined
-  >(
-    !firebaseConfig || Platform.OS === "web"
-      ? {
-          text:
-            "To get started, provide a valid firebase config in App.js and open this snack on an iOS or Android device.",
-        }
-      : undefined
-  );
+    const facebookResult = await Facebook.logInWithReadPermissionsAsync({
+      permissions: ["public_profile"],
+    });
 
-  const sendcode = async () => {
-    try {
-      if (recaptchaVerifier.current === null) {
-        showMessage({
-          text: "Recaptcha verifier ca'nt initial",
-        });
-        return;
-      }
-      const phoneProvider = new firebase.auth.PhoneAuthProvider();
-      const verificationId = await phoneProvider.verifyPhoneNumber(
-        phoneNumber,
-        recaptchaVerifier.current
+    if (facebookResult.type === "success") {
+      const credential = firebase.auth.FacebookAuthProvider.credential(
+        facebookResult.token
       );
-      setVerificationId(verificationId);
-      showMessage({
-        text: "Verification code has been sent to your phone.",
-      });
-    } catch (err) {
-      showMessage({ text: `Error: ${err.message}`, color: "red" });
+
+      firebase
+        .auth()
+        .signInWithCredential(credential)
+        .catch((error) => {});
     }
+  }
+
+  const [modalVisible, setModalVisible] = React.useState<boolean>(false);
+  const [hasPermission, setHasPermission] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    (async () => {
+      const { status } = await BarCodeScanner.requestPermissionsAsync();
+      setHasPermission(status === "granted");
+    })();
+  }, []);
+
+  const handleBarCodeScanned = ({ type, data }: BarCodeEvent) => {
+    _storeData(data);
+    dispatchStore && dispatchStore({ s2: data });
   };
 
-  const verification = async () => {
-    try {
-      const credential = firebase.auth.PhoneAuthProvider.credential(
-        verificationId,
-        verificationCode
-      );
-      await firebase.auth().signInWithCredential(credential);
-      showMessage({
-        text: "Phone authentication successful 👍",
-      });
-    } catch (err) {
-      showMessage({
-        text: `Error: ${err.message}`,
-        color: "red",
-      });
-    }
-  };
-
+  if (hasPermission === null) {
+    return <Text>Requesting for camera permission</Text>;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
   return (
-    <React.Fragment>
-      <View style={styles.container}>
-        <FirebaseRecaptchaVerifierModal
-          ref={recaptchaVerifier}
-          firebaseConfig={firebaseConfig}
-        />
-        <Text style={{ marginTop: 20 }}>Enter phone number (+84)</Text>
-        <TextInput
-          style={{ marginVertical: 10, fontSize: 17 }}
-          placeholder="+84 99 999 9999"
-          autoFocus
-          autoCompleteType="tel"
-          keyboardType="phone-pad"
-          textContentType="telephoneNumber"
-          onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}
-        />
-        <Button
-          title="Send Verification Code"
-          disabled={!phoneNumber}
-          onPress={sendcode}
-        />
-        <Text style={{ marginTop: 20 }}>Enter Verification code</Text>
-        <TextInput
-          style={{ marginVertical: 10, fontSize: 17 }}
-          editable={!!verificationId}
-          placeholder="123456"
-          onChangeText={setVerificationCode}
-        />
-        <Button
-          title="Confirm Verification Code"
-          disabled={!verificationId}
-          onPress={verification}
-        />
-      </View>
-      {message ? (
-        <TouchableOpacity
+    <SafeAreaView style={styles.container}>
+      {me && (
+        <View style={{ alignItems: "center" }}>
+          <Image
+            style={styles.avatar}
+            source={{ uri: me.photoURL ? me.photoURL : "" }}
+          />
+          <Text style={styles.name}>{me.displayName}</Text>
+          <Icon onPress={() => setModalVisible(true)} name="qrcode" size={32} />
+          <Text>{s2}</Text>
+        </View>
+      )}
+      {!me && <Button title="Facebook" onPress={loginWithFacebook} />}
+
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(false);
+        }}
+      >
+        <View style={styles.centeredView}></View>
+        <BarCodeScanner
+          onBarCodeScanned={handleBarCodeScanned}
           style={[
-            StyleSheet.absoluteFill,
-            { backgroundColor: "0xffffffee", justifyContent: "center" },
+            StyleSheet.absoluteFillObject,
+            { alignItems: "center", justifyContent: "center" },
           ]}
-          onPress={() => showMessage(undefined)}
         >
-          <Text
-            style={{
-              color: message.color || "blue",
-              fontSize: 17,
-              textAlign: "center",
-              margin: 20,
-            }}
-          >
-            {message.text}
-          </Text>
-        </TouchableOpacity>
-      ) : undefined}
-    </React.Fragment>
+          {me && (
+            <QRCode backgroundColor="transparent" value={me.uid} size={200} />
+          )}
+        </BarCodeScanner>
+      </Modal>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: "center",
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
+  avatar: {
+    height: 180,
+    width: 180,
+    borderRadius: 140,
+    borderWidth: 1,
+  },
+  name: {
+    fontSize: 32,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
