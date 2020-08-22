@@ -3,23 +3,24 @@ import * as React from "react";
 import { Button, StyleSheet } from "react-native";
 import { GiftedChat, IMessage, Actions } from "react-native-gifted-chat";
 import * as ImagePicker from "expo-image-picker";
-import Constants from "expo-constants";
-import * as Permissions from "expo-permissions";
 import { Text, View } from "@components/Themed";
 import { TabOneScreenProps } from "@models/navigation";
-import uuid from "uuid";
-import { useFocusEffect } from "@react-navigation/native";
 import { Store } from "@hooks/Store";
+import { uploadImageAsync } from "@hooks/useStorecloud";
+import { sendPushNotification } from "@hooks/useNotification";
 export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
   const { me, s2 } = React.useContext(Store);
 
   const [messages, setmessages] = React.useState<IMessage[]>([]);
+  const [online, setonline] = React.useState<string>("offline");
+  const [token, settoken] = React.useState<string>("");
 
   function _onSend(mess: IMessage[] = []) {
     for (let i = 0; i < mess.length; i++) {
       delete mess[i]["_id"];
       append(mess[i]);
     }
+    push(mess[0]);
   }
 
   function ref() {
@@ -54,31 +55,35 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
       .limitToLast(20)
       .on("child_added", (snapshot) => callback(parse(snapshot)));
   }
-  function off() {
-    ref().off();
-  }
-
-  function setupHighscoreListener() {
-    database()
-      .ref("/status/")
-      .orderByChild("uid")
-      .equalTo("SdEcEojq03f7xsGP4cPJHlPdyCR2")
-      .on("value", (snapshot) => {
-        const data = snapshot.val();
-
-        if (data) {
-        }
-      });
+  function push(m: IMessage) {
+    console.log(online);
+    console.log(token);
+    if (online === "offline" && token != "") {
+      sendPushNotification(token,m);
+    }
   }
 
   React.useEffect(() => {
     if (s2 && me) {
-      setupHighscoreListener();
       on((m) =>
         setmessages((previousMessages) =>
           GiftedChat.append(previousMessages, m)
         )
       );
+      const refStatus = database().ref("/status/" + s2);
+      const refToken = database().ref("/token/" + s2);
+      refStatus.on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          setonline(data.state);
+        }
+      });
+      refToken.on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          settoken(data);
+        }
+      });
     }
   }, [s2, me]);
 
@@ -159,27 +164,6 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
   }
 });
 
-async function uploadImageAsync(uri: string) {
-  const blob: Blob = await new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.onload = function () {
-      resolve(xhr.response);
-    };
-    xhr.onerror = function (e) {
-      console.log(e);
-      reject(new TypeError("Network request failed"));
-    };
-    xhr.responseType = "blob";
-    xhr.open("GET", uri, true);
-    xhr.send(null);
-  });
-
-  const ref = storage().ref().child(uuid.v4());
-  const snapshot = await ref.put(blob);
-
-  // We're done with the blob, close and release it
-  return await snapshot.ref.getDownloadURL();
-}
 const styles = StyleSheet.create({
   container: {
     flex: 1,

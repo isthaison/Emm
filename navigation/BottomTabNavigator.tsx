@@ -14,11 +14,22 @@ import {
   TabTwoParamList,
 } from "@models/navigation";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import * as Notifications from "expo-notifications";
+import * as Permissions from "expo-permissions";
 import { createStackNavigator } from "@react-navigation/stack";
 import TabOneScreen from "@screens/TabOneScreen";
 import TabTwoScreen from "@screens/TabTwoScreen";
 import { AsyncStorage } from "react-native";
 import { Store } from "@hooks/Store";
+import { registerForPushNotificationsAsync } from "@hooks/useNotification";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -37,8 +48,6 @@ export default function BottomTabNavigator() {
       }
     });
     _retrieveData();
-
-  
   }, []);
 
   async function _retrieveData() {
@@ -52,6 +61,12 @@ export default function BottomTabNavigator() {
 
   function status(currentUser: firebase.User | null) {
     if (currentUser) {
+      registerForPushNotificationsAsync().then((token) => {
+        firebase
+          .database()
+          .ref("token/" + currentUser.uid)
+          .set(token);
+      });
       dispatchStore && dispatchStore({ me: currentUser });
 
       const { uid } = currentUser;

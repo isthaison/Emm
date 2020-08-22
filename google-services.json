@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "369740818318",
+    "firebase_url": "https://nson-276306.firebaseio.com",
+    "project_id": "nson-276306",
+    "storage_bucket": "nson-276306.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:369740818318:android:4512ab78050d204cc426df",
+        "android_client_info": {
+          "package_name": "com.emm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "369740818318-qjgkpvqvv67s20j2tm91vmbfieab5tgc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzI-N94itwKccUqE9DgcwPeTRgScd8hjI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "369740818318-qjgkpvqvv67s20j2tm91vmbfieab5tgc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

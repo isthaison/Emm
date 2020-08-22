@@ -15,7 +15,9 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.emm"
@@ -25,7 +27,11 @@
     },
     "android": {
       "versionCode": 1,
-      "package": "com.emm"
-    }
+      "package": "com.emm",
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true
+    },
+    "description": "...",
+    "githubUrl": "https://github.com/isthaison/Emm"
   }
 }

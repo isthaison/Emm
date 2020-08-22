@@ -65,6 +65,9 @@ export default function TabTwoScreen() {
   const handleBarCodeScanned = ({ type, data }: BarCodeEvent) => {
     _storeData(data);
     dispatchStore && dispatchStore({ s2: data });
+    if (data.length > 20) {
+      setModalVisible(false);
+    }
   };
 
   if (hasPermission === null) {
