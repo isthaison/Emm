@@ -24,7 +24,7 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
   }
 
   function ref() {
-    return database().ref("message/" + [me?.uid, s2].sort().join("") + "/");
+    return database().ref("message").child([me?.uid, s2].sort().join(""));
   }
 
   const append = (message: any) => {
@@ -59,7 +59,7 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
     console.log(online);
     console.log(token);
     if (online === "offline" && token != "") {
-      sendPushNotification(token,m);
+      sendPushNotification(token, m);
     }
   }
 
