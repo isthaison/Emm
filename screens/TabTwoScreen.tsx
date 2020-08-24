@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   Modal,
   Alert,
+  TouchableNativeFeedback,
   AsyncStorage,
 } from "react-native";
 import * as firebase from "firebase";
@@ -73,6 +74,9 @@ export default function TabTwoScreen() {
       setHasPermission(status === "granted");
     })();
   }, []);
+  React.useEffect(() => {
+    s2 && onChangeText(s2);
+  }, [s2]);
 
   const handleBarCodeScanned = ({ type, data }: BarCodeEvent) => {
     _storeData(data);
@@ -99,10 +103,13 @@ export default function TabTwoScreen() {
     <View style={styles.container}>
       {me && (
         <View style={{ alignItems: "center" }}>
-          <Image
-            style={styles.avatar}
-            source={{ uri: me.photoURL ? me.photoURL : "" }}
-          />
+          <TouchableNativeFeedback onPress={_coppier}>
+            <Image
+              style={styles.avatar}
+              source={{ uri: me.photoURL ? me.photoURL : "" }}
+            />
+          </TouchableNativeFeedback>
+
           <Text onPress={_coppier} style={styles.name}>
             {me.displayName}
           </Text>
@@ -113,7 +120,7 @@ export default function TabTwoScreen() {
             <TextInput
               placeholder="uid"
               onChangeText={(text) => onChangeText(text)}
-              value={value === "" ? me.uid : value}
+              value={value}
             />
             <Icon onPress={_add} name="team" size={32} />
           </View>

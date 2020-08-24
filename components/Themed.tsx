@@ -77,7 +77,7 @@ export function TextInput(props: DefaultTextInputProps) {
           flex: 1,
           paddingHorizontal: 6,
           color: text,
-          borderRadius:8
+          borderRadius:24
         },
         style,
       ]}
