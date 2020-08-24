@@ -1,9 +1,9 @@
 import * as React from "react";
 import {
   StyleSheet,
-  TextInput,
   Button,
   TouchableOpacity,
+  Clipboard,
   Image,
   Platform,
   StatusBar,
@@ -17,10 +17,21 @@ import * as Facebook from "expo-facebook";
 import QRCode from "react-native-qrcode-svg";
 import { BarCodeScanner, BarCodeEvent } from "expo-barcode-scanner";
 
-import { Text, View, useThemeColor, Icon } from "@components/Themed";
+import { Text, View, useThemeColor, Icon, TextInput } from "@components/Themed";
 import { AntDesign } from "@expo/vector-icons";
 import Colors from "@constants/Colors";
 import { Store } from "@hooks/Store";
+type F = {};
+async function _storeDatas2s(users: object[]) {
+  try {
+    await AsyncStorage.setItem("@EmmStore:s2s", JSON.stringify(users));
+    return true;
+  } catch (error) {
+    // Error saving data
+    return false;
+  }
+}
+
 async function _storeData(uid: string) {
   try {
     await AsyncStorage.setItem("@EmmStore:s2", uid);
@@ -54,6 +65,7 @@ export default function TabTwoScreen() {
 
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
   const [hasPermission, setHasPermission] = React.useState<boolean>(false);
+  const [value, onChangeText] = React.useState("");
 
   React.useEffect(() => {
     (async () => {
@@ -70,6 +82,13 @@ export default function TabTwoScreen() {
     }
   };
 
+  const _add = () => {
+    _storeData(value);
+    dispatchStore && dispatchStore({ s2: value });
+  };
+  const _coppier = () => {
+    Clipboard.setString(me?.uid ? me?.uid : "");
+  };
   if (hasPermission === null) {
     return <Text>Requesting for camera permission</Text>;
   }
@@ -77,16 +96,27 @@ export default function TabTwoScreen() {
     return <Text>No access to camera</Text>;
   }
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {me && (
         <View style={{ alignItems: "center" }}>
           <Image
             style={styles.avatar}
             source={{ uri: me.photoURL ? me.photoURL : "" }}
           />
-          <Text style={styles.name}>{me.displayName}</Text>
+          <Text onPress={_coppier} style={styles.name}>
+            {me.displayName}
+          </Text>
           <Icon onPress={() => setModalVisible(true)} name="qrcode" size={32} />
-          <Text>{s2}</Text>
+          <View
+            style={{ flexDirection: "row", alignItems: "center", padding: 3 }}
+          >
+            <TextInput
+              placeholder="uid"
+              onChangeText={(text) => onChangeText(text)}
+              value={value === "" ? me.uid : value}
+            />
+            <Icon onPress={_add} name="team" size={32} />
+          </View>
         </View>
       )}
       {!me && <Button title="Facebook" onPress={loginWithFacebook} />}
@@ -112,7 +142,7 @@ export default function TabTwoScreen() {
           )}
         </BarCodeScanner>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 

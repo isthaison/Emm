@@ -1,5 +1,9 @@
 import * as React from "react";
-import { Text as DefaultText, View as DefaultView } from "react-native";
+import {
+  Text as DefaultText,
+  View as DefaultView,
+  TextInput as DefaultTextInput,
+} from "react-native";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -26,6 +30,7 @@ type ThemeProps = {
 
 export type TextProps = ThemeProps & DefaultText["props"];
 export type ViewProps = ThemeProps & DefaultView["props"];
+export type DefaultTextInputProps = ThemeProps & DefaultTextInput["props"];
 
 export function Text(props: TextProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
@@ -55,4 +60,27 @@ export function Icon(props: IconProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
 
   return <AntDesign color={color} {...otherProps} />;
+}
+
+export function TextInput(props: DefaultTextInputProps) {
+  const { style, lightColor, darkColor, ...otherProps } = props;
+
+  const text = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+
+  return (
+    <DefaultTextInput
+      style={[
+        {
+          height: 40,
+          borderColor: "gray",
+          borderWidth: 1,
+          flex: 1,
+          paddingHorizontal: 6,
+          color: text,
+        },
+        style,
+      ]}
+      {...otherProps}
+    />
+  );
 }

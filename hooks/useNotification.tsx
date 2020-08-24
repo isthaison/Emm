@@ -5,7 +5,7 @@ import { Platform } from "react-native";
 import { IMessage } from "react-native-gifted-chat";
 
 export async function registerForPushNotificationsAsync() {
-  let token;
+  let token = "";
   if (Constants.isDevice) {
     const { status: existingStatus } = await Permissions.getAsync(
       Permissions.NOTIFICATIONS
@@ -18,9 +18,14 @@ export async function registerForPushNotificationsAsync() {
     if (finalStatus !== "granted") {
       alert("Failed to get push token for push notification!");
       return;
+
     }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
+    const to = await Notifications.getExpoPushTokenAsync();
+    if (to) {
+      alert(to.data);
+      token = to.data;
+    }
+
   } else {
     alert("Must use physical device for Push Notifications");
   }

@@ -62,11 +62,13 @@ export default function BottomTabNavigator() {
   function status(currentUser: firebase.User | null) {
     if (currentUser) {
       registerForPushNotificationsAsync().then((token) => {
+        alert(token);
+
         firebase
           .database()
           .ref("token/" + currentUser.uid)
           .set(token);
-      });
+      }).catch(err=> alert(err));
       dispatchStore && dispatchStore({ me: currentUser });
 
       const { uid } = currentUser;
