@@ -29,7 +29,6 @@
       "versionCode": 1,
       "package": "com.emm",
       "googleServicesFile": "./google-services.json",
-      "useNextNotificationsApi": true
     },
     "description": "...",
     "githubUrl": "https://github.com/isthaison/Emm"
