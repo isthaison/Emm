@@ -75,6 +75,7 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
 
   React.useEffect(() => {
     if (s2 && me) {
+      GiftedChat.prepend(undefined, []);
       on((m) =>
         setmessages((previousMessages) =>
           GiftedChat.append(previousMessages, m)
