@@ -154,6 +154,7 @@ export default function TabTwoScreen() {
             <Icon onPress={_add} name="team" size={32} />
           </View>
           <FlatList
+            ListHeaderComponent={<Text>Danh sách đã kết bạn</Text>}
             data={s2s}
             keyExtractor={(item, index) => item._id.toString()}
             renderItem={({ item }) => (

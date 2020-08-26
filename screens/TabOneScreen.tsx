@@ -1,6 +1,6 @@
 import { database, auth, storage } from "firebase";
 import * as React from "react";
-import { Button, StyleSheet, ActivityIndicator, } from "react-native";
+import { Button, StyleSheet, ActivityIndicator } from "react-native";
 import { GiftedChat, IMessage, Actions } from "react-native-gifted-chat";
 import * as ImagePicker from "expo-image-picker";
 import { Text, View } from "@components/Themed";
@@ -47,6 +47,13 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
       image,
       timestamp: new Date(timestamp),
     };
+    if (user._id !== me?.uid) {
+      database()
+        .ref("friend")
+        .child(me ? me?.uid : "")
+        .child(user._id)
+        .set(user);
+    }
     return message;
   };
 
