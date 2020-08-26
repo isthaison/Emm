@@ -29,13 +29,11 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
     push(mess[0]);
   }
 
-  function ref() {
-    return database().ref("message").child([me?.uid, s2].sort().join(""));
-  }
-
   const append = (message: any) => {
     message["timestamp"] = database.ServerValue.TIMESTAMP;
-    ref()
+    database()
+      .ref("message")
+      .child([me?.uid, s2].sort().join(""))
       .push(message)
       .then((err) => {
         console.log(err);
@@ -61,13 +59,13 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
   };
 
   function on(callback: (mess: any) => void) {
-    return ref()
+    return database()
+      .ref("message")
+      .child([me?.uid, s2].sort().join(""))
       .limitToLast(20)
       .on("child_added", (snapshot) => callback(parse(snapshot)));
   }
   function push(m: IMessage) {
-    console.log(online);
-    console.log(token);
     if (online === "offline" && token != "") {
       sendPushNotification(token, m);
     }
@@ -75,7 +73,7 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
 
   React.useEffect(() => {
     if (s2 && me) {
-      GiftedChat.prepend(undefined, []);
+      setmessages([]);
       on((m) =>
         setmessages((previousMessages) =>
           GiftedChat.append(previousMessages, m)
@@ -129,9 +127,7 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
       }
 
       console.log(result);
-    } catch (E) {
-      console.log(E);
-    }
+    } catch (e) {}
   };
   if (!me || !s2) {
     return (
