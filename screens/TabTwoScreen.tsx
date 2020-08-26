@@ -12,26 +12,17 @@ import {
   Alert,
   TouchableNativeFeedback,
   AsyncStorage,
+  FlatList,
 } from "react-native";
 import * as firebase from "firebase";
 import * as Facebook from "expo-facebook";
 import QRCode from "react-native-qrcode-svg";
 import { BarCodeScanner, BarCodeEvent } from "expo-barcode-scanner";
+import { User } from "react-native-gifted-chat";
 
 import { Text, View, useThemeColor, Icon, TextInput } from "@components/Themed";
-import { AntDesign } from "@expo/vector-icons";
-import Colors from "@constants/Colors";
 import { Store } from "@hooks/Store";
 type F = {};
-async function _storeDatas2s(users: object[]) {
-  try {
-    await AsyncStorage.setItem("@EmmStore:s2s", JSON.stringify(users));
-    return true;
-  } catch (error) {
-    // Error saving data
-    return false;
-  }
-}
 
 async function _storeData(uid: string) {
   try {
@@ -67,12 +58,30 @@ export default function TabTwoScreen() {
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
   const [hasPermission, setHasPermission] = React.useState<boolean>(false);
   const [value, onChangeText] = React.useState("");
+  const [s2s, sets2s] = React.useState<User[]>([]);
 
   React.useEffect(() => {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === "granted");
     })();
+    me?.uid &&
+    firebase
+      .database()
+      .ref("friend")
+      .child(me?.uid)
+      .limitToLast(200)
+      .on("value", (snapshot) => {
+        const _l: User[] = [];
+        const data = snapshot.val();
+        if (data) {
+          for (const [key, value] of Object.entries(data)) {
+            console.log(`${key}: ${value}`);
+            _l.push(value as User);
+          }
+        }
+        sets2s(_l);
+      });
   }, []);
   React.useEffect(() => {
     s2 && onChangeText(s2);
@@ -81,6 +90,14 @@ export default function TabTwoScreen() {
   const handleBarCodeScanned = ({ type, data }: BarCodeEvent) => {
     _storeData(data);
     dispatchStore && dispatchStore({ s2: data });
+    firebase
+      .database()
+      .ref("friend")
+      .child(me ? me?.uid : "")
+      .child(data)
+      .set({
+        _id: data,
+      });
     if (data.length > 20) {
       setModalVisible(false);
     }
@@ -89,6 +106,19 @@ export default function TabTwoScreen() {
   const _add = () => {
     _storeData(value);
     dispatchStore && dispatchStore({ s2: value });
+
+    firebase
+      .database()
+      .ref("friend")
+      .child(me ? me?.uid : "")
+      .child(value)
+      .set({
+        _id: value,
+      });
+  };
+  const _addpress = (s: string) => {
+    _storeData(s);
+    dispatchStore && dispatchStore({ s2: s });
   };
   const _coppier = () => {
     Clipboard.setString(me?.uid ? me?.uid : "");
@@ -124,6 +154,32 @@ export default function TabTwoScreen() {
             />
             <Icon onPress={_add} name="team" size={32} />
           </View>
+          <FlatList
+            ListHeaderComponent={<Text>Danh sách đã kết bạn</Text>}
+            data={s2s}
+            keyExtractor={(item, index) => item._id.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => {
+                  _addpress(item._id.toString());
+                }}
+                style={{ flexDirection: "row" }}
+              >
+                <Image
+                  style={{
+                    height: 60,
+                    width: 60,
+                    borderRadius: 40,
+                    borderWidth: 1,
+                  }}
+                  source={{
+                    uri: typeof item.avatar === "string" ? item.avatar : "",
+                  }}
+                />
+                <Text>{item.name}</Text>
+              </TouchableOpacity>
+            )}
+          />
         </View>
       )}
       {!me && <Button title="Facebook" onPress={loginWithFacebook} />}

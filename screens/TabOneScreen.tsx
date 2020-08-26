@@ -47,6 +47,9 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
       image,
       timestamp: new Date(timestamp),
     };
+    if (user._id !== me?.uid) {
+      me?.uid && database().ref("friend").child(me?.uid).child(user._id).set(user);
+    }
     return message;
   };
 
