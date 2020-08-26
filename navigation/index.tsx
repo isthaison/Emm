@@ -7,11 +7,11 @@ import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
 import { ColorSchemeName } from "react-native";
 
-import NotFoundScreen from "../screens/NotFoundScreen";
+import NotFoundScreen from "screens/NotFoundScreen";
 import { RootStackParamList } from "../models/navigation";
 import BottomTabNavigator from "./BottomTabNavigator";
 import LinkingConfiguration from "./LinkingConfiguration";
-import { StoreState, Store, initialState } from "@hooks/Store";
+import { StoreState, Store, initialState } from "hooks/Store";
 
 export default function Navigation({
   colorScheme,

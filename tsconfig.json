@@ -14,25 +14,25 @@
     "resolveJsonModule": true,
     "strict": true,
     "paths": {
-      "@constants/*": [
+      "constants/*": [
         "constants/*"
       ],
-      "@hooks/*": [
+      "hooks/*": [
         "hooks/*"
       ],
-      "@screens/*": [
+      "screens/*": [
         "screens/*"
       ],
-      "@components/*": [
+      "components/*": [
         "components/*"
       ],
-      "@assets/*": [
+      "assets/*": [
         "assets/*"
       ],
-      "@models/*": [
+      "models/*": [
         "models/*"
       ],
-      "@navigation/*": [
+      "navigation/*": [
         "navigation/*"
       ],
     },

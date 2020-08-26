@@ -1,13 +1,19 @@
 import { database, auth, storage } from "firebase";
 import * as React from "react";
-import { Button, StyleSheet, ActivityIndicator, SafeAreaView, StatusBar } from "react-native";
+import {
+  Button,
+  StyleSheet,
+  ActivityIndicator,
+  SafeAreaView,
+  StatusBar,
+} from "react-native";
 import { GiftedChat, IMessage, Actions } from "react-native-gifted-chat";
 import * as ImagePicker from "expo-image-picker";
-import { Text, View } from "@components/Themed";
-import { TabOneScreenProps } from "@models/navigation";
-import { Store } from "@hooks/Store";
-import { uploadImageAsync } from "@hooks/useStorecloud";
-import { sendPushNotification } from "@hooks/useNotification";
+import { Text, View } from "components/Themed";
+import { TabOneScreenProps } from "models/navigation";
+import { Store } from "hooks/Store";
+import { uploadImageAsync } from "hooks/useStorecloud";
+import { sendPushNotification } from "hooks/useNotification";
 export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
   const { me, s2 } = React.useContext(Store);
 
@@ -48,7 +54,8 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
       timestamp: new Date(timestamp),
     };
     if (user._id !== me?.uid) {
-      me?.uid && database().ref("friend").child(me?.uid).child(user._id).set(user);
+      me?.uid &&
+        database().ref("friend").child(me?.uid).child(user._id).set(user);
     }
     return message;
   };
@@ -134,7 +141,7 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
   } else {
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar/>
+        <StatusBar />
         <GiftedChat
           messages={messages}
           onSend={_onSend}

@@ -1,27 +1,27 @@
 import * as React from "react";
 
-import Colors from "@constants/Colors";
+import Colors from "constants/Colors";
 import {
   Ionicons,
   FontAwesome5,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import * as firebase from "firebase";
-import useColorScheme from "@hooks/useColorScheme";
+import useColorScheme from "hooks/useColorScheme";
 import {
   BottomTabParamList,
   TabOneParamList,
   TabTwoParamList,
-} from "@models/navigation";
+} from "models/navigation";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
 import { createStackNavigator } from "@react-navigation/stack";
-import TabOneScreen from "@screens/TabOneScreen";
-import TabTwoScreen from "@screens/TabTwoScreen";
+import TabOneScreen from "screens/TabOneScreen";
+import TabTwoScreen from "screens/TabTwoScreen";
 import { AsyncStorage, AppState, AppStateStatus } from "react-native";
-import { Store } from "@hooks/Store";
-import { registerForPushNotificationsAsync } from "@hooks/useNotification";
+import { Store } from "hooks/Store";
+import { registerForPushNotificationsAsync } from "hooks/useNotification";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
