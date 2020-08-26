@@ -1,6 +1,6 @@
 import { database, auth, storage } from "firebase";
 import * as React from "react";
-import { Button, StyleSheet, ActivityIndicator } from "react-native";
+import { Button, StyleSheet, ActivityIndicator, SafeAreaView, StatusBar } from "react-native";
 import { GiftedChat, IMessage, Actions } from "react-native-gifted-chat";
 import * as ImagePicker from "expo-image-picker";
 import { Text, View } from "@components/Themed";
@@ -133,7 +133,8 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
     );
   } else {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
+        <StatusBar/>
         <GiftedChat
           messages={messages}
           onSend={_onSend}
@@ -155,7 +156,7 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
             />
           )}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 });

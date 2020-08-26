@@ -32,9 +32,12 @@ export default function useCachedResources() {
           measurementId: "G-HTDZN5L3D6",
         };
 
-        initializeApp(firebaseConfig);
+        await initializeApp(firebaseConfig);
+
+        setTimeout(() => {
+          
+        }, 900);
       } catch (e) {
-        // We might want to provide this error information to an error reporting service
         console.warn(e);
       } finally {
         setLoadingComplete(true);

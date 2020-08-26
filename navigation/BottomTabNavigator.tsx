@@ -19,7 +19,7 @@ import * as Permissions from "expo-permissions";
 import { createStackNavigator } from "@react-navigation/stack";
 import TabOneScreen from "@screens/TabOneScreen";
 import TabTwoScreen from "@screens/TabTwoScreen";
-import { AsyncStorage } from "react-native";
+import { AsyncStorage, AppState, AppStateStatus } from "react-native";
 import { Store } from "@hooks/Store";
 import { registerForPushNotificationsAsync } from "@hooks/useNotification";
 
@@ -90,31 +90,65 @@ export default function BottomTabNavigator() {
         .database()
         .ref(".info/connected")
         .on("value", function (snapshot) {
-          // If we're not currently connected, don't do anything.
           if (snapshot.val() == false) {
             return;
           }
 
-          // If we are currently connected, then use the 'onDisconnect()'
-          // method to add a set which will only trigger once this
-          // client has disconnected by closing the app,
-          // losing internet, or any other means.
           userStatusDatabaseRef
             .onDisconnect()
             .set(isOfflineForDatabase)
             .then(function () {
-              // The promise returned from .onDisconnect().set() will
-              // resolve as soon as the server acknowledges the onDisconnect()
-              // request, NOT once we've actually disconnected:
-              // https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect
-
-              // We can now safely set ourselves as 'online' knowing that the
-              // server will mark us as offline once we lose connection.
               userStatusDatabaseRef.set(isOnlineForDatabase);
             });
         });
     }
   }
+
+  React.useEffect(() => {
+    AppState.addEventListener("change", _handleAppStateChange);
+
+    return () => {
+      AppState.removeEventListener("change", _handleAppStateChange);
+      const currentUser: firebase.User | null = firebase.auth().currentUser;
+      if (currentUser) {
+        const { uid } = currentUser;
+        var userStatusDatabaseRef = firebase.database().ref("/status/" + uid);
+
+        var isOfflineForDatabase = {
+          state: "offline",
+          last_changed: firebase.database.ServerValue.TIMESTAMP,
+          uid,
+        };
+
+        userStatusDatabaseRef.set(isOfflineForDatabase);
+      }
+    };
+  }, []);
+
+  const _handleAppStateChange = (nextAppState: AppStateStatus) => {
+    const currentUser: firebase.User | null = firebase.auth().currentUser;
+    if (currentUser) {
+      const { uid } = currentUser;
+      var userStatusDatabaseRef = firebase.database().ref("/status/" + uid);
+
+      var isOfflineForDatabase = {
+        state: "offline",
+        last_changed: firebase.database.ServerValue.TIMESTAMP,
+        uid,
+      };
+
+      var isOnlineForDatabase = {
+        state: "online",
+        last_changed: firebase.database.ServerValue.TIMESTAMP,
+        uid,
+      };
+      if (nextAppState === "active") {
+        userStatusDatabaseRef.set(isOnlineForDatabase);
+      } else {
+        userStatusDatabaseRef.set(isOfflineForDatabase);
+      }
+    }
+  };
 
   return (
     <BottomTab.Navigator

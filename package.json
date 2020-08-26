@@ -7,7 +7,7 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "test": "jest --watchAll",
-    "apk": "expo build:android",
+    "apk": "expo build:android -t apk",
     "bw": "expo build:web",
     "publish": "expo publish",
     "hash": "expo fetch:android:hashes",

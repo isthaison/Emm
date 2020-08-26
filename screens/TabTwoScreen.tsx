@@ -66,22 +66,22 @@ export default function TabTwoScreen() {
       setHasPermission(status === "granted");
     })();
     me?.uid &&
-    firebase
-      .database()
-      .ref("friend")
-      .child(me?.uid)
-      .limitToLast(200)
-      .on("value", (snapshot) => {
-        const _l: User[] = [];
-        const data = snapshot.val();
-        if (data) {
-          for (const [key, value] of Object.entries(data)) {
-            console.log(`${key}: ${value}`);
-            _l.push(value as User);
+      firebase
+        .database()
+        .ref("friend")
+        .child(me?.uid)
+        .limitToLast(200)
+        .on("value", (snapshot) => {
+          const _l: User[] = [];
+          const data = snapshot.val();
+          if (data) {
+            for (const [key, value] of Object.entries(data)) {
+              console.log(`${key}: ${value}`);
+              _l.push(value as User);
+            }
           }
-        }
-        sets2s(_l);
-      });
+          sets2s(_l);
+        });
   }, []);
   React.useEffect(() => {
     s2 && onChangeText(s2);
@@ -132,30 +132,36 @@ export default function TabTwoScreen() {
   return (
     <View style={styles.container}>
       {me && (
-        <View style={{ alignItems: "center" }}>
-          <TouchableNativeFeedback onPress={_coppier}>
-            <Image
-              style={styles.avatar}
-              source={{ uri: me.photoURL ? me.photoURL : "" }}
-            />
-          </TouchableNativeFeedback>
+        <View>
+          <View style={{ alignItems: "center" }}>
+            <TouchableNativeFeedback onPress={_coppier}>
+              <Image
+                style={styles.avatar}
+                source={{ uri: me.photoURL ? me.photoURL : "" }}
+              />
+            </TouchableNativeFeedback>
 
-          <Text onPress={_coppier} style={styles.name}>
-            {me.displayName}
-          </Text>
-          <Icon onPress={() => setModalVisible(true)} name="qrcode" size={32} />
-          <View
-            style={{ flexDirection: "row", alignItems: "center", padding: 3 }}
-          >
-            <TextInput
-              placeholder="uid"
-              onChangeText={(text) => onChangeText(text)}
-              value={value}
+            <Text onPress={_coppier} style={styles.name}>
+              {me.displayName}
+            </Text>
+            <Icon
+              onPress={() => setModalVisible(true)}
+              name="qrcode"
+              size={32}
             />
-            <Icon onPress={_add} name="team" size={32} />
+            <View
+              style={{ flexDirection: "row", alignItems: "center", padding: 3 }}
+            >
+              <TextInput
+                placeholder="uid"
+                onChangeText={(text) => onChangeText(text)}
+                value={value}
+              />
+              <Icon onPress={_add} name="team" size={32} />
+            </View>
           </View>
           <FlatList
-            ListHeaderComponent={<Text>Danh sách đã kết bạn</Text>}
+            ListHeaderComponent={<Text>Danh sách bạn</Text>}
             data={s2s}
             keyExtractor={(item, index) => item._id.toString()}
             renderItem={({ item }) => (
@@ -163,7 +169,7 @@ export default function TabTwoScreen() {
                 onPress={() => {
                   _addpress(item._id.toString());
                 }}
-                style={{ flexDirection: "row" }}
+                style={{ flexDirection: "row", margin: 4 }}
               >
                 <Image
                   style={{
@@ -176,7 +182,15 @@ export default function TabTwoScreen() {
                     uri: typeof item.avatar === "string" ? item.avatar : "",
                   }}
                 />
-                <Text>{item.name}</Text>
+                <View
+                  style={{
+                    marginLeft: 6,
+                justifyContent:'center'
+                  }}
+                >
+                  <Text style={{ fontSize: 18 }}>{item.name}</Text>
+                  <Text style={{ fontSize: 8 }}>{item._id}</Text>
+                </View>
               </TouchableOpacity>
             )}
           />
