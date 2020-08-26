@@ -19,6 +19,7 @@
       "**/*"
     ],
     "ios": {
+      "buildNumber": "1.0.0",
       "supportsTablet": true,
       "bundleIdentifier": "com.emm"
     },
@@ -28,10 +29,10 @@
     "android": {
       "versionCode": 1,
       "package": "com.emm",
-      "googleServicesFile": "./google-services.json",
-      "useNextNotificationsApi": true
+      "googleServicesFile": "./google-services.json"
     },
     "description": "...",
     "githubUrl": "https://github.com/isthaison/Emm"
+    
   }
 }

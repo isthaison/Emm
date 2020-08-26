@@ -1,6 +1,6 @@
 import { database, auth, storage } from "firebase";
 import * as React from "react";
-import { Button, StyleSheet } from "react-native";
+import { Button, StyleSheet, ActivityIndicator } from "react-native";
 import { GiftedChat, IMessage, Actions } from "react-native-gifted-chat";
 import * as ImagePicker from "expo-image-picker";
 import { Text, View } from "@components/Themed";
@@ -124,16 +124,9 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
   };
   if (!me || !s2) {
     return (
-      <Text
-        style={{
-          fontSize: 80,
-          textAlign: "center",
-          textAlignVertical: "center",
-          flex: 1,
-        }}
-      >
-        🌼
-      </Text>
+      <View style={styles.container}>
+        <ActivityIndicator />
+      </View>
     );
   } else {
     return (

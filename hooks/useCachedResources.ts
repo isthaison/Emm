@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
@@ -16,6 +16,8 @@ export default function useCachedResources() {
         // Load fonts
         await Font.loadAsync({
           ...Ionicons.font,
+          ...MaterialCommunityIcons.font,
+          ...AntDesign.font,
           'space-mono': require('../assets/fonts/SpaceMono-Regular.ttf'),
         });
 
@@ -29,7 +31,7 @@ export default function useCachedResources() {
           appId: "1:369740818318:web:9cf65a10d34fac42c426df",
           measurementId: "G-HTDZN5L3D6",
         };
-        
+
         initializeApp(firebaseConfig);
       } catch (e) {
         // We might want to provide this error information to an error reporting service
