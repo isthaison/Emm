@@ -65,10 +65,11 @@ export default function TabTwoScreen() {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === "granted");
     })();
+    me?.uid &&
     firebase
       .database()
       .ref("friend")
-      .child(me ? me?.uid : "")
+      .child(me?.uid)
       .limitToLast(200)
       .on("value", (snapshot) => {
         const _l: User[] = [];
