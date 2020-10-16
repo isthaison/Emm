@@ -1,13 +1,19 @@
 import { database, auth, storage } from "firebase";
 import * as React from "react";
-import { Button, StyleSheet, ActivityIndicator, SafeAreaView, StatusBar } from "react-native";
+import {
+  Button,
+  StyleSheet,
+  ActivityIndicator,
+  SafeAreaView,
+  StatusBar,
+} from "react-native";
 import { GiftedChat, IMessage, Actions } from "react-native-gifted-chat";
 import * as ImagePicker from "expo-image-picker";
-import { Text, View } from "@components/Themed";
-import { TabOneScreenProps } from "@models/navigation";
-import { Store } from "@hooks/Store";
-import { uploadImageAsync } from "@hooks/useStorecloud";
-import { sendPushNotification } from "@hooks/useNotification";
+import { Text, View } from "components/Themed";
+import { TabOneScreenProps } from "models/navigation";
+import { Store } from "hooks/Store";
+import { uploadImageAsync } from "hooks/useStorecloud";
+import { sendPushNotification } from "hooks/useNotification";
 export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
   const { me, s2 } = React.useContext(Store);
 
@@ -23,13 +29,11 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
     push(mess[0]);
   }
 
-  function ref() {
-    return database().ref("message").child([me?.uid, s2].sort().join(""));
-  }
-
   const append = (message: any) => {
     message["timestamp"] = database.ServerValue.TIMESTAMP;
-    ref()
+    database()
+      .ref("message")
+      .child([me?.uid, s2].sort().join(""))
       .push(message)
       .then((err) => {
         console.log(err);
@@ -48,19 +52,20 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
       timestamp: new Date(timestamp),
     };
     if (user._id !== me?.uid) {
-      me?.uid && database().ref("friend").child(me?.uid).child(user._id).set(user);
+      me?.uid &&
+        database().ref("friend").child(me?.uid).child(user._id).set(user);
     }
     return message;
   };
 
   function on(callback: (mess: any) => void) {
-    return ref()
+    return database()
+      .ref("message")
+      .child([me?.uid, s2].sort().join(""))
       .limitToLast(20)
       .on("child_added", (snapshot) => callback(parse(snapshot)));
   }
   function push(m: IMessage) {
-    console.log(online);
-    console.log(token);
     if (online === "offline" && token != "") {
       sendPushNotification(token, m);
     }
@@ -68,6 +73,7 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
 
   React.useEffect(() => {
     if (s2 && me) {
+      setmessages([]);
       on((m) =>
         setmessages((previousMessages) =>
           GiftedChat.append(previousMessages, m)
@@ -121,9 +127,7 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
       }
 
       console.log(result);
-    } catch (E) {
-      console.log(E);
-    }
+    } catch (e) {}
   };
   if (!me || !s2) {
     return (
@@ -134,7 +138,7 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
   } else {
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar/>
+        <StatusBar />
         <GiftedChat
           messages={messages}
           onSend={_onSend}

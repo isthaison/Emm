@@ -20,8 +20,8 @@ import QRCode from "react-native-qrcode-svg";
 import { BarCodeScanner, BarCodeEvent } from "expo-barcode-scanner";
 import { User } from "react-native-gifted-chat";
 
-import { Text, View, useThemeColor, Icon, TextInput } from "@components/Themed";
-import { Store } from "@hooks/Store";
+import { Text, View, useThemeColor, Icon, TextInput } from "components/Themed";
+import { Store } from "hooks/Store";
 type F = {};
 
 async function _storeData(uid: string) {
