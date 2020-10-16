@@ -23,7 +23,6 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
 
   function _onSend(mess: IMessage[] = []) {
     for (let i = 0; i < mess.length; i++) {
-      delete mess[i]["_id"];
       append(mess[i]);
     }
     push(mess[0]);
@@ -168,6 +167,7 @@ export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 30,
   },
   title: {
     fontSize: 20,
