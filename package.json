@@ -12,7 +12,7 @@
     "publish": "expo publish",
     "hash": "expo fetch:android:hashes",
     "token": "expo push:android:upload --api-key AAAAVhZFJ44:APA91bF1o-ar15_piqdLpfa2hcdsk_-J0EnxfxLnr4X41VW0XZ8xL_ZlEph4lKbVFhJp3-hcU61U1DaKd34q5NqNpA3qoCbQpBUpnty7TodFIKDC27mYDRWg8mOWqqOLijTe9Ia9cfnd",
-    "export":"expo export --force --public-url https://isthaison.github.io/Emm/",
+    "export":"expo export --force --public-url https://isthaison.github.io/Emm/dist/",
     "apk-git":"expo build:android -t apk --public-url https://isthaison.github.io/Emm/dist/android-index.json"
   },
   "jest": {
