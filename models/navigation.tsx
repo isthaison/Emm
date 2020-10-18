@@ -1,5 +1,6 @@
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { User } from "react-native-gifted-chat";
 
 export type RootStackParamList = {
   Root: undefined;
@@ -13,7 +14,7 @@ export type BottomTabParamList = {
 
 export type TabOneParamList = {
   TabOneScreen: undefined;
-  MessageScreen: { id: string };
+  ChatScreen: { user: User };
 };
 
 export type TabTwoParamList = {

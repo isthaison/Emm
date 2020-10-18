@@ -19,6 +19,7 @@ import * as Permissions from "expo-permissions";
 import { createStackNavigator } from "@react-navigation/stack";
 import TabOneScreen from "screens/TabOneScreen";
 import TabTwoScreen from "screens/TabTwoScreen";
+import ChatScreen from "screens/ChatScreen";
 import { AsyncStorage, AppState, AppStateStatus } from "react-native";
 import { Store } from "hooks/Store";
 import { registerForPushNotificationsAsync } from "hooks/useNotification";
@@ -197,6 +198,11 @@ function TabOneNavigator() {
       <TabOneStack.Screen
         name="TabOneScreen"
         component={TabOneScreen}
+        options={{ header: () => null }}
+      />
+       <TabOneStack.Screen
+        name="ChatScreen"
+        component={ChatScreen}
         options={{ header: () => null }}
       />
     </TabOneStack.Navigator>
