@@ -1,181 +1,122 @@
-import { database, auth, storage } from "firebase";
 import * as React from "react";
 import {
-  Button,
   StyleSheet,
-  ActivityIndicator,
-  SafeAreaView,
+  Button,
+  TouchableOpacity,
+  Clipboard,
+  Image,
+  Platform,
   StatusBar,
+  SafeAreaView,
+  Modal,
+  Alert,
+  TouchableNativeFeedback,
+  AsyncStorage,
+  FlatList,
 } from "react-native";
-import { GiftedChat, IMessage, Actions } from "react-native-gifted-chat";
-import * as ImagePicker from "expo-image-picker";
-import { Text, View } from "components/Themed";
-import { TabOneScreenProps } from "models/navigation";
+import * as firebase from "firebase";
+import * as Facebook from "expo-facebook";
+import QRCode from "react-native-qrcode-svg";
+import { BarCodeScanner, BarCodeEvent } from "expo-barcode-scanner";
+import { User } from "react-native-gifted-chat";
+
+import { Text, View, useThemeColor, Icon, TextInput } from "components/Themed";
 import { Store } from "hooks/Store";
-import { uploadImageAsync } from "hooks/useStorecloud";
-import { sendPushNotification } from "hooks/useNotification";
-export default React.memo(function TabOneScreen({}: TabOneScreenProps) {
-  const { me, s2 } = React.useContext(Store);
 
-  const [messages, setmessages] = React.useState<IMessage[]>([]);
-  const [online, setonline] = React.useState<string>("offline");
-  const [token, settoken] = React.useState<string>("");
-
-  function _onSend(mess: IMessage[] = []) {
-    for (let i = 0; i < mess.length; i++) {
-      append(mess[i]);
-    }
-    push(mess[0]);
+async function _storeData(uid: string) {
+  try {
+    await AsyncStorage.setItem("@EmmStore:s2", uid);
+    return true;
+  } catch (error) {
+    // Error saving data
+    return false;
   }
+}
 
-  const append = (message: any) => {
-    message["timestamp"] = database.ServerValue.TIMESTAMP;
-    database()
-      .ref("message")
-      .child([me?.uid, s2].sort().join(""))
-      .push(message)
-      .then((err) => {
-        console.log(err);
-      })
-      .catch((ee) => console.log(ee));
-  };
+export default function TabOneScreen() {
+  const { dispatchStore, me, s2 } = React.useContext(Store);
 
-  const parse = (snapshot: database.DataSnapshot) => {
-    const { text, user, image, timestamp } = snapshot.val();
-    const { key: _id } = snapshot;
-    const message = {
-      _id,
-      text,
-      user,
-      image,
-      timestamp: new Date(timestamp),
-    };
-    if (user._id !== me?.uid) {
-      me?.uid &&
-        database().ref("friend").child(me?.uid).child(user._id).set(user);
-    }
-    return message;
-  };
-
-  function on(callback: (mess: any) => void) {
-    return database()
-      .ref("message")
-      .child([me?.uid, s2].sort().join(""))
-      .limitToLast(20)
-      .on("child_added", (snapshot) => callback(parse(snapshot)));
-  }
-  function push(m: IMessage) {
-    if (online === "offline" && token != "") {
-      sendPushNotification(token, m);
-    }
-  }
+  const [s2s, sets2s] = React.useState<User[]>([]);
 
   React.useEffect(() => {
-    if (s2 && me) {
-      setmessages([]);
-      on((m) =>
-        setmessages((previousMessages) =>
-          GiftedChat.append(previousMessages, m)
-        )
-      );
-      const refStatus = database().ref("/status/" + s2);
-      const refToken = database().ref("/token/" + s2);
-      refStatus.on("value", (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setonline(data.state);
-        }
-      });
-      refToken.on("value", (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          settoken(data);
-        }
-      });
-    }
-  }, [s2, me]);
+    me?.uid &&
+      firebase
+        .database()
+        .ref("friend")
+        .child(me?.uid)
+        .limitToLast(200)
+        .on("value", (snapshot) => {
+          const _l: User[] = [];
+          const data = snapshot.val();
+          if (data) {
+            for (const [key, value] of Object.entries(data)) {
+              console.log(`${key}: ${value}`);
+              _l.push(value as User);
+            }
+          }
+          sets2s(_l);
+        });
+  }, []);
 
-  const _Library = async () => {
-    try {
-      let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
-
-      if (permissionResult.granted === false) {
-        alert("Permission to access camera roll is required!");
-        return;
-      }
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        allowsEditing: false,
-
-        quality: 1,
-      });
-      if (!result.cancelled && me) {
-        const urifirestore = await uploadImageAsync(result.uri);
-        const mess: IMessage = {
-          _id: new Date().getTime(),
-          user: {
-            _id: me.uid,
-            avatar: me.photoURL ? me.photoURL : "",
-            name: me.displayName ? me.displayName : "",
-          },
-          image: urifirestore,
-          createdAt: new Date(),
-          text: "",
-        };
-        append(mess);
-      }
-
-      console.log(result);
-    } catch (e) {}
+  const _addpress = (s: string) => {
+    _storeData(s);
+    dispatchStore && dispatchStore({ s2: s });
   };
-  if (!me || !s2) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator />
-      </View>
-    );
-  } else {
-    return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar />
-        <GiftedChat
-          messages={messages}
-          onSend={_onSend}
-          inverted
-          user={{
-            _id: me.uid,
-            avatar: me.photoURL ? me.photoURL : "",
-            name: me.displayName ? me.displayName : "",
+
+  return (
+    <FlatList
+      data={s2s}
+      keyExtractor={(item, index) => item._id.toString()}
+      renderItem={({ item }) => (
+        <TouchableOpacity
+          onPress={() => {
+            _addpress(item._id.toString());
           }}
-          renderActions={() => (
-            <Actions
-              options={{
-                "Choose From Library": _Library,
-                Cancel: () => {
-                  console.log("Cancel");
-                },
-              }}
-              optionTintColor="#222B45"
-            />
-          )}
-        />
-      </SafeAreaView>
-    );
-  }
-});
+          style={{ flexDirection: "row", margin: 4 }}
+        >
+          <Image
+            style={{
+              height: 60,
+              width: 60,
+              borderRadius: 40,
+              borderWidth: 1,
+            }}
+            source={{
+              uri: typeof item.avatar === "string" ? item.avatar : "",
+            }}
+          />
+          <View
+            style={{
+              marginLeft: 6,
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ fontSize: 18 }}>{item.name}</Text>
+            <Text style={{ fontSize: 8 }}>{item._id}</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+    />
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 30,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
+  avatar: {
+    height: 180,
+    width: 180,
+    borderRadius: 140,
+    borderWidth: 1,
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
+  name: {
+    fontSize: 32,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -132,7 +132,6 @@ export default function TabTwoScreen() {
   return (
     <View style={styles.container}>
       {me && (
-        <View>
           <View style={{ alignItems: "center" }}>
             <TouchableNativeFeedback onPress={_coppier}>
               <Image
@@ -160,41 +159,7 @@ export default function TabTwoScreen() {
               <Icon onPress={_add} name="team" size={32} />
             </View>
           </View>
-          <FlatList
-            ListHeaderComponent={<Text>Danh sách bạn</Text>}
-            data={s2s}
-            keyExtractor={(item, index) => item._id.toString()}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => {
-                  _addpress(item._id.toString());
-                }}
-                style={{ flexDirection: "row", margin: 4 }}
-              >
-                <Image
-                  style={{
-                    height: 60,
-                    width: 60,
-                    borderRadius: 40,
-                    borderWidth: 1,
-                  }}
-                  source={{
-                    uri: typeof item.avatar === "string" ? item.avatar : "",
-                  }}
-                />
-                <View
-                  style={{
-                    marginLeft: 6,
-                justifyContent:'center'
-                  }}
-                >
-                  <Text style={{ fontSize: 18 }}>{item.name}</Text>
-                  <Text style={{ fontSize: 8 }}>{item._id}</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
+          
       )}
       {!me && <Button title="Facebook" onPress={loginWithFacebook} />}
 
