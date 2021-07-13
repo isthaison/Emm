@@ -37,7 +37,7 @@ async function _storeData(uid: string) {
 export default function TabTwoScreen() {
   const { dispatchStore, me, s2 } = React.useContext(Store);
   async function loginWithFacebook() {
-    await Facebook.initializeAsync("769595773610249");
+    await Facebook.initializeAsync("223667479609301");
 
     const facebookResult = await Facebook.logInWithReadPermissionsAsync({
       permissions: ["public_profile"],
@@ -51,7 +51,7 @@ export default function TabTwoScreen() {
       firebase
         .auth()
         .signInWithCredential(credential)
-        .catch((error) => {});
+        .catch((error) => { });
     }
   }
 
@@ -132,34 +132,34 @@ export default function TabTwoScreen() {
   return (
     <View style={styles.container}>
       {me && (
-          <View style={{ alignItems: "center" }}>
-            <TouchableNativeFeedback onPress={_coppier}>
-              <Image
-                style={styles.avatar}
-                source={{ uri: me.photoURL ? me.photoURL : "" }}
-              />
-            </TouchableNativeFeedback>
-
-            <Text onPress={_coppier} style={styles.name}>
-              {me.displayName}
-            </Text>
-            <Icon
-              onPress={() => setModalVisible(true)}
-              name="qrcode"
-              size={32}
+        <View style={{ alignItems: "center" }}>
+          <TouchableNativeFeedback onPress={_coppier}>
+            <Image
+              style={styles.avatar}
+              source={{ uri: me.photoURL ? me.photoURL : "" }}
             />
-            <View
-              style={{ flexDirection: "row", alignItems: "center", padding: 3 }}
-            >
-              <TextInput
-                placeholder="uid"
-                onChangeText={(text) => onChangeText(text)}
-                value={value}
-              />
-              <Icon onPress={_add} name="team" size={32} />
-            </View>
+          </TouchableNativeFeedback>
+
+          <Text onPress={_coppier} style={styles.name}>
+            {me.displayName}
+          </Text>
+          <Icon
+            onPress={() => setModalVisible(true)}
+            name="qrcode"
+            size={32}
+          />
+          <View
+            style={{ flexDirection: "row", alignItems: "center", padding: 3 }}
+          >
+            <TextInput
+              placeholder="uid"
+              onChangeText={(text) => onChangeText(text)}
+              value={value}
+            />
+            <Icon onPress={_add} name="team" size={32} />
           </View>
-          
+        </View>
+
       )}
       {!me && <Button title="Facebook" onPress={loginWithFacebook} />}
 
