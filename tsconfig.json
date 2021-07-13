@@ -34,7 +34,7 @@
       ],
       "navigation/*": [
         "navigation/*"
-      ],
+      ]
     },
     "typeRoots": [
       "node_modules/@types"
@@ -47,9 +47,10 @@
     "components/**/*",
     "constants/**/*",
     "hooks/**/*",
-    "navigation/**/*",
+    "navigation/**/*"
   ],
   "exclude": [
-    "node_modules",
-  ]
+    "node_modules"
+  ],
+  "extends": "expo/tsconfig.base"
 }

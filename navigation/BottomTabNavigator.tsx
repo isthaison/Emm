@@ -7,6 +7,9 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import * as firebase from "firebase";
+import 'firebase/database';
+import 'firebase/auth';
+
 import useColorScheme from "hooks/useColorScheme";
 import {
   BottomTabParamList,
@@ -20,9 +23,10 @@ import { createStackNavigator } from "@react-navigation/stack";
 import TabOneScreen from "screens/TabOneScreen";
 import TabTwoScreen from "screens/TabTwoScreen";
 import ChatScreen from "screens/ChatScreen";
-import { AsyncStorage, AppState, AppStateStatus } from "react-native";
+import {  AppState, AppStateStatus } from "react-native";
 import { Store } from "hooks/Store";
 import { registerForPushNotificationsAsync } from "hooks/useNotification";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({

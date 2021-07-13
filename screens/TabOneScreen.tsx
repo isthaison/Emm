@@ -11,17 +11,22 @@ import {
   Modal,
   Alert,
   TouchableNativeFeedback,
-  AsyncStorage,
   FlatList,
 } from "react-native";
+
+
 import * as firebase from "firebase";
-import * as Facebook from "expo-facebook";
-import QRCode from "react-native-qrcode-svg";
-import { BarCodeScanner, BarCodeEvent } from "expo-barcode-scanner";
+import "firebase/auth";
+import "firebase/database";
+import "firebase/firestore";
+import "firebase/functions";
+import "firebase/storage";
+
 import { User } from "react-native-gifted-chat";
 
 import { Text, View, useThemeColor, Icon, TextInput } from "components/Themed";
 import { Store } from "hooks/Store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 async function _storeData(uid: string) {
   try {

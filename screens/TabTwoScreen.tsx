@@ -2,19 +2,20 @@ import * as React from "react";
 import {
   StyleSheet,
   Button,
-  TouchableOpacity,
-  Clipboard,
+
   Image,
-  Platform,
-  StatusBar,
-  SafeAreaView,
+
   Modal,
-  Alert,
+
   TouchableNativeFeedback,
-  AsyncStorage,
-  FlatList,
+
 } from "react-native";
 import * as firebase from "firebase";
+import "firebase/auth";
+import "firebase/database";
+import "firebase/firestore";
+import "firebase/functions";
+import "firebase/storage";
 import * as Facebook from "expo-facebook";
 import QRCode from "react-native-qrcode-svg";
 import { BarCodeScanner, BarCodeEvent } from "expo-barcode-scanner";
@@ -22,7 +23,9 @@ import { User } from "react-native-gifted-chat";
 
 import { Text, View, useThemeColor, Icon, TextInput } from "components/Themed";
 import { Store } from "hooks/Store";
-type F = {};
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Clipboard from "@react-native-clipboard/clipboard";
+
 
 async function _storeData(uid: string) {
   try {
@@ -37,11 +40,14 @@ async function _storeData(uid: string) {
 export default function TabTwoScreen() {
   const { dispatchStore, me, s2 } = React.useContext(Store);
   async function loginWithFacebook() {
-    await Facebook.initializeAsync("223667479609301");
+    await Facebook.initializeAsync({ appId: "508641377049985", appName: 'Emm', version: '' });
 
     const facebookResult = await Facebook.logInWithReadPermissionsAsync({
-      permissions: ["public_profile"],
+      permissions: ["public_profile", ""],
     });
+
+    console.log(facebookResult);
+
 
     if (facebookResult.type === "success") {
       const credential = firebase.auth.FacebookAuthProvider.credential(
@@ -51,7 +57,10 @@ export default function TabTwoScreen() {
       firebase
         .auth()
         .signInWithCredential(credential)
-        .catch((error) => { });
+        .catch((error) => {
+          console.log(error);
+
+        });
     }
   }
 
@@ -161,7 +170,14 @@ export default function TabTwoScreen() {
         </View>
 
       )}
-      {!me && <Button title="Facebook" onPress={loginWithFacebook} />}
+
+      {!me &&
+        <View style={{ paddingHorizontal: '10%' }}>
+          <Button title="Facebook" onPress={loginWithFacebook} />
+
+        </View>
+
+      }
 
       <Modal
         animationType="slide"

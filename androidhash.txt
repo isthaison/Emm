@@ -1,0 +1,5 @@
+Accessing credentials for isthaison in project Emm
+Google Certificate Fingerprint:     D9:8B:CD:A6:EF:56:AE:3E:70:6B:57:D8:94:47:7D:19:9D:8C:26:2A
+Google Certificate Hash (SHA-1):    D98BCDA6EF56AE3E706B57D894477D199D8C262A
+Google Certificate Hash (SHA-256):  84982AEA3F08D0FF318AA43C4EE5E46D213CAC39985214F5557CBF24665156D6
+Facebook Key Hash:                  2YvNpu9Wrj5wa1fYlEd9GZ2MJio=
